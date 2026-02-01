@@ -10,13 +10,9 @@ import mongoose, { type Mongoose } from "mongoose"
  * (In production, the module is typically loaded once per server process.)
  */
 
-const MONGODB_URI = process.env.MONGODB_URI ?? process.env.MONGODB_URL
+const MONGODB_URI =process.env.MONGODB_URL
 
-if (!MONGODB_URI) {
-  throw new Error(
-    "Missing MongoDB connection string. Set MONGODB_URI (preferred) or MONGODB_URL in your environment."
-  )
-}
+
 
 type MongooseCache = {
   conn: Mongoose | null
@@ -31,6 +27,11 @@ const cached: MongooseCache =
   globalThis.__mongooseCache ?? (globalThis.__mongooseCache = { conn: null, promise: null })
 
 export async function connectToDatabase(): Promise<Mongoose> {
+  if (!MONGODB_URI) {
+  throw new Error(
+    "Missing MongoDB connection string. Set MONGODB_URI (preferred) or MONGODB_URL in your environment."
+  )
+}
   // Reuse an existing connection if we already established one.
   if (cached.conn) return cached.conn
 
