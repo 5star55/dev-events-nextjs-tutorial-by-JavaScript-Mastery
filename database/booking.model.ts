@@ -49,6 +49,9 @@ const BookingSchema = new Schema<Booking>(
 // Index eventId for faster lookups like: find({ eventId })
 BookingSchema.index({ eventId: 1 })
 
+// Ensure one booking per email per event (prevents duplicates like same email booking same event twice).
+BookingSchema.index({ eventId: 1, email: 1 }, { unique: true })
+
 /**
  * Pre-save validation: ensure the referenced event exists.
  *
