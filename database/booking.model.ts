@@ -1,5 +1,5 @@
 import mongoose, { Schema, type HydratedDocument, type Model } from "mongoose"
-import { EventModel } from "./event.model"
+import { IEvent , Event} from "./event.model"
 
 export interface Booking {
   /** Reference to the booked Event document. */
@@ -58,7 +58,7 @@ BookingSchema.index({ eventId: 1, email: 1 }, { unique: true })
  * This prevents storing bookings that point to a non-existent Event.
  */
 BookingSchema.pre("save", async function (this: HydratedDocument<Booking>) {
-  const exists = await EventModel.exists({ _id: this.eventId })
+  const exists = await Event.exists({ _id: this.eventId })
   if (!exists) {
     throw new Error("Event does not exist for the provided eventId")
   }
