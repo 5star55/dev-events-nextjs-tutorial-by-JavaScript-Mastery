@@ -10,7 +10,9 @@ type RouteParams = {
     slug: string;
   }>;
 };
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+const BASE_URL =
+  process.env.NEXT_PUBLIC_BASE_URL ??
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000");
 
 
 export default function EventPage({ params }: RouteParams) {
@@ -63,8 +65,6 @@ async function EventDetails({ params }: RouteParams) {
   const {event: {_id,title, description,overview,image, date, time, location, venue,tags, organizer, agenda,mode,audience}} = await res.json()
   const bookings=10;
 
-  const similarEvents=  await getSimilarEventsBySlug({slug})
-  console.log(similarEvents)
   return (
     <section id="event" className='m-10'>
       <div className='header' >
@@ -110,14 +110,23 @@ async function EventDetails({ params }: RouteParams) {
         </div>
 
       </div>
-      <div className="flex w-full flex-col gap-4 pt-20">
-        <h2>Similar Events</h2>
-        <div className='events'>
-          {similarEvents.length>0 && similarEvents.map(similarEvent => ( 
-            <EventCard key={similarEvent.title} {...similarEvent}/>
-          ))}
-        </div>
-      </div>
+      <Suspense fallback={<div>Loading similar events...</div>}>
+        <SimilarEvents slug={slug} />
+      </Suspense>
     </section>
   );
+}
+
+async function SimilarEvents({ slug }: { slug: string }) {
+  const similarEvents = await getSimilarEventsBySlug({ slug })
+  return (
+    <div className="flex w-full flex-col gap-4 pt-20">
+      <h2>Similar Events</h2>
+      <div className='events'>
+        {similarEvents.length>0 && similarEvents.map(similarEvent => ( 
+          <EventCard key={similarEvent.title} {...similarEvent}/>
+        ))}
+      </div>
+    </div>
+  )
 }
