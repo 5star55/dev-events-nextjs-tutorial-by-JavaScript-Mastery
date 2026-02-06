@@ -60,7 +60,7 @@ async function EventDetails({ params }: RouteParams) {
   const res = await fetch(requestUrl, { cache: "no-store" });
   console.log("EventDetails status:", res.status);
 
-  const {event: {title, description,overview,image, date, time, location, venue,tags, organizer, agenda,mode,audience}} = await res.json()
+  const {event: {_id,title, description,overview,image, date, time, location, venue,tags, organizer, agenda,mode,audience}} = await res.json()
   const bookings=10;
 
   const similarEvents=  await getSimilarEventsBySlug({slug})
@@ -102,7 +102,7 @@ async function EventDetails({ params }: RouteParams) {
                 <p>Join {bookings} who have already booked their spot!</p>)
               : <p>Be the first to book your spot!</p>
               }
-              <BookEvent/>
+              <BookEvent eventId={_id} slug={slug}/>
            </div>
 
           </aside>

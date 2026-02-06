@@ -1,5 +1,5 @@
-export { Event } from "./event.model"
-export type { IEvent } from "./event.model"
+export { Event } from "./event.model";
+export type { IEvent } from "./event.model";
 
-export { BookingModel } from "./booking.model"
-export type { Booking } from "./booking.model"
+export { default as Booking } from "./booking.model";
+export type { IBooking } from "./booking.model";
