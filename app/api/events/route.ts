@@ -5,6 +5,8 @@ import { Event } from "@/database"
 import connectDB from "@/lib/mongodb";
 
 export async function POST(req: NextRequest) {
+  
+
   try {
     await connectDB();
     const formData = await req.formData();
@@ -21,6 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
+
     const file = formData.get("image") as File;
 
     if (!file) {
@@ -29,7 +32,7 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    
     const tags = JSON.parse(formData.get("tags") as string);
     const agenda = JSON.parse(formData.get("agenda") as string);
 
