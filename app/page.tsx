@@ -1,43 +1,49 @@
-import ExploreBtn from '@/components/ExploreBtn'
-import React, { Suspense } from 'react'
-import EventCard from '@/components/EventCard'
-// import {events} from '../lib/constants'
-import type {Event} from '../lib/constants'
+import EventCard from "@/components/EventCard";
+import ExploreBtn from "@/components/ExploreBtn";
+import type { IEvent } from "@/database";
+import { cacheLife } from "next/cache";
 
-async function EventsList() {
-  'use cache'
-  const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ??
-    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
-  const response = await fetch(`${baseUrl}/api/events`, { cache: "no-store" })
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Events API failed: ${response.status} ${text}`)
-  }
-  const {events}= await response.json()
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-  return (
-    <ul className="events list-none">
-      {events && events.length>0 && events.map((event: Event)=>
-        <li key={event.title} className='my-7'><EventCard {...event}/></li>
-      )}
-    </ul>
-  )
-}
+const Home = async () => {
+	"use cache";
+	cacheLife("hours");
 
-export default function Home() {
-  return (
-    <section>
-      <h1 className='text-center mt-5'>The Hub for Every Dev <br /> Events you can't miss</h1>
-      <p className='text-center mt-5'>Hackathons, meetups and Conferences, All in one place</p>
-      <ExploreBtn/>
+	const response = await fetch(`${BASE_URL}/api/events`);
+	const data = await response.json();
 
-      <div className="mt-20 space-y-7">
-        <h3 className='text-center'>Featured Events</h3>
-        <Suspense fallback={<div>Loading events...</div>}>
-          <EventsList/>
-        </Suspense>
-      </div>
-    </section>
-  )
-}
+	if (!response.ok || !data || typeof data !== "object") {
+		throw new Error("Invalid or incomplete JSON data");
+	}
+
+	const { events } = data;
+
+	return (
+		<section>
+			<h1 className='text-center'>
+				The Hub for Every Dev <br />
+				Event you Can&apos;t Miss
+			</h1>
+			<p className='text-center mt-5'>
+				Hackatons, Meetups and Conferences, all in one place
+			</p>
+
+			<ExploreBtn />
+
+			<div className='mt-20 space-y-7'>
+				<h3 id='events'>Featured Events</h3>
+				<ul className='events'>
+					{events &&
+						events.length > 0 &&
+						events.map((event: IEvent) => (
+							<li key={event.title}>
+								<EventCard {...event} />
+							</li>
+						))}
+				</ul>
+			</div>
+		</section>
+	);
+};
+
+export default Home;
