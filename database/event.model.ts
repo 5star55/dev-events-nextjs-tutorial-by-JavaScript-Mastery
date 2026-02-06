@@ -106,7 +106,6 @@ const EventSchema = new Schema<IEvent>(
 );
 
 // Indexes for performance
-EventSchema.index({ slug: 1 });
 EventSchema.index({ tags: 1 });
 EventSchema.index({ date: 1 });
 

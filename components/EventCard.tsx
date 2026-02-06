@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 const EventCard = ({
+	_id,
 	title,
 	image,
 	slug,
@@ -9,9 +10,10 @@ const EventCard = ({
 	date,
 	time,
 }: eventCardProps) => {
+	const eventPath = slug && slug.length > 0 ? slug : _id;
 	return (
 		<Link
-			href={`/events/${slug}`}
+			href={`/events/${eventPath}`}
 			id='event-card'>
 			<Image
 				src={image}

@@ -1,22 +1,15 @@
 import EventCard from "@/components/EventCard";
 import ExploreBtn from "@/components/ExploreBtn";
-import type { IEvent } from "@/database";
+import Event, { type IEvent } from "@/database/event.model";
+import connectDB from "@/lib/mongodb";
 import { cacheLife } from "next/cache";
-
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Home = async () => {
 	"use cache";
 	cacheLife("hours");
 
-	const response = await fetch(`${BASE_URL}/api/events`);
-	const data = await response.json();
-
-	if (!response.ok || !data || typeof data !== "object") {
-		throw new Error("Invalid or incomplete JSON data");
-	}
-
-	const { events } = data;
+	await connectDB();
+	const events = (await Event.find().sort({ createdAt: -1 }).lean()) as IEvent[];
 
 	return (
 		<section>
@@ -36,8 +29,16 @@ const Home = async () => {
 					{events &&
 						events.length > 0 &&
 						events.map((event: IEvent) => (
-							<li key={event.title}>
-								<EventCard {...event} />
+							<li key={event._id.toString()}>
+								<EventCard
+									_id={event._id.toString()}
+									title={event.title}
+									image={event.image}
+									slug={event.slug}
+									location={event.location}
+									date={event.date}
+									time={event.time}
+								/>
 							</li>
 						))}
 				</ul>

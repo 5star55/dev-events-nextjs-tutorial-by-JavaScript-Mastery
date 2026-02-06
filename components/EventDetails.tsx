@@ -3,31 +3,23 @@ import EventAgenda from '@/components/EventAgenda';
 import EventCard from '@/components/EventCard';
 import EventDetailItem from '@/components/EventDetailItem';
 import EventTags from '@/components/EventTags';
+import Event from '@/database/event.model';
 import {getSimilarEventsBySlug} from '@/lib/actions/event.actions';
+import connectDB from '@/lib/mongodb';
 import Image from 'next/image';
 import {notFound} from 'next/navigation';
+import {isValidObjectId} from 'mongoose';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
-const EventDetails = async ({params}: {params: Promise<string>}) => {
-	const slug = await params;
+const EventDetails = async ({params}: {params: {slug: string}}) => {
+	const {slug} = params;
 
 	let event;
 	try {
-		const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
-			cache: 'no-store',
-		});
-
-		if (!request.ok) {
-			if (request.status === 404) {
-				return notFound();
-			}
-			throw new Error(`Failed to fetch event: ${request.statusText}`);
+		await connectDB();
+		event = await Event.findOne({slug}).lean();
+		if (!event && isValidObjectId(slug)) {
+			event = await Event.findById(slug).lean();
 		}
-
-		const response = await request.json();
-		event = response.event;
-
 		if (!event) {
 			return notFound();
 		}
@@ -132,8 +124,8 @@ const EventDetails = async ({params}: {params: Promise<string>}) => {
 						)}
 
 						<BookEvents
-							eventId={event._id}
-							slug={event.slug}
+							eventId={event._id.toString()}
+							slug={event.slug || ''}
 						/>
 					</div>
 				</aside>
@@ -142,18 +134,19 @@ const EventDetails = async ({params}: {params: Promise<string>}) => {
 			<div className='flex w-full flex-col gap-4 pt-20'>
 				<h2>Similar Events</h2>
 				<div className='events'>
-					{similarEvents.length > 0 &&
-						similarEvents.map((similarEvent) => (
-							<EventCard
+						{similarEvents.length > 0 &&
+							similarEvents.map((similarEvent) => (
+								<EventCard
 								key={similarEvent.title}
+								_id={similarEvent._id}
 								title={similarEvent.title}
 								image={similarEvent.image}
 								slug={similarEvent.slug}
 								location={similarEvent.location}
 								date={similarEvent.date}
 								time={similarEvent.time}
-							/>
-						))}
+								/>
+							))}
 				</div>
 			</div>
 		</section>

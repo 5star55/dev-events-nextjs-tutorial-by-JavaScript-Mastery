@@ -87,7 +87,25 @@ const LightRays: React.FC<LightRaysProps> = ({
 	className = ""
 }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const uniformsRef = useRef<any>(null);
+	type UniformValue<T> = { value: T };
+	type LightRaysUniforms = {
+		iTime: UniformValue<number>;
+		iResolution: UniformValue<[number, number]>;
+		rayPos: UniformValue<[number, number]>;
+		rayDir: UniformValue<[number, number]>;
+		raysColor: UniformValue<[number, number, number]>;
+		raysSpeed: UniformValue<number>;
+		lightSpread: UniformValue<number>;
+		rayLength: UniformValue<number>;
+		pulsating: UniformValue<number>;
+		fadeDistance: UniformValue<number>;
+		saturation: UniformValue<number>;
+		mousePos: UniformValue<[number, number]>;
+		mouseInfluence: UniformValue<number>;
+		noiseAmount: UniformValue<number>;
+		distortion: UniformValue<number>;
+	};
+	const uniformsRef = useRef<LightRaysUniforms | null>(null);
 	const rendererRef = useRef<Renderer | null>(null);
 	const mouseRef = useRef({ x: 0.5, y: 0.5 });
 	const smoothMouseRef = useRef({ x: 0.5, y: 0.5 });
@@ -96,6 +114,7 @@ const LightRays: React.FC<LightRaysProps> = ({
 	const cleanupFunctionRef = useRef<(() => void) | null>(null);
 	const [isVisible, setIsVisible] = useState(false);
 	const observerRef = useRef<IntersectionObserver | null>(null);
+	const vec2 = (x: number, y: number): [number, number] => [x, y];
 
 	useEffect(() => {
 		if (!containerRef.current) return;
@@ -250,12 +269,12 @@ const LightRays: React.FC<LightRaysProps> = ({
 				gl_FragColor  = color;
 				}`;
 
-			const uniforms = {
+			const uniforms: LightRaysUniforms = {
 				iTime: { value: 0 },
-				iResolution: { value: [1, 1] },
+				iResolution: { value: vec2(1, 1) },
 
-				rayPos: { value: [0, 0] },
-				rayDir: { value: [0, 1] },
+				rayPos: { value: vec2(0, 0) },
+				rayDir: { value: vec2(0, 1) },
 
 				raysColor: { value: hexToRgb(raysColor) },
 				raysSpeed: { value: raysSpeed },
@@ -264,7 +283,7 @@ const LightRays: React.FC<LightRaysProps> = ({
 				pulsating: { value: pulsating ? 1.0 : 0.0 },
 				fadeDistance: { value: fadeDistance },
 				saturation: { value: saturation },
-				mousePos: { value: [0.5, 0.5] },
+				mousePos: { value: vec2(0.5, 0.5) },
 				mouseInfluence: { value: mouseInfluence },
 				noiseAmount: { value: noiseAmount },
 				distortion: { value: distortion }
@@ -292,7 +311,7 @@ const LightRays: React.FC<LightRaysProps> = ({
 				const w = wCSS * dpr;
 				const h = hCSS * dpr;
 
-				uniforms.iResolution.value = [w, h];
+				uniforms.iResolution.value = vec2(w, h);
 
 				const { anchor, dir } = getAnchorAndDir(raysOrigin, w, h);
 				uniforms.rayPos.value = anchor;
@@ -316,10 +335,10 @@ const LightRays: React.FC<LightRaysProps> = ({
 						smoothMouseRef.current.y * smoothing +
 						mouseRef.current.y * (1 - smoothing);
 
-					uniforms.mousePos.value = [
+					uniforms.mousePos.value = vec2(
 						smoothMouseRef.current.x,
 						smoothMouseRef.current.y
-					];
+					);
 				}
 
 				try {

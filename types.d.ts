@@ -1,7 +1,8 @@
 type eventCardProps = {
+	_id: string;
 	title: string;
 	image: string;
-	slug: string;
+	slug?: string;
 	location: string;
 	date: string;
 	time: string;

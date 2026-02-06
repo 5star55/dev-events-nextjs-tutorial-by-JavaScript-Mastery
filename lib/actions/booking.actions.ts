@@ -2,15 +2,12 @@
 import Booking from "@/database/booking.model";
 import Event from "@/database/event.model";
 import connectDB from "../mongodb";
-import Error from "next/error";
 
 export async function createBooking({
 	eventId,
-	slug,
 	email
 }: {
 	eventId: string;
-	slug: string;
 	email: string;
 }) {
 	try {
@@ -28,13 +25,12 @@ export async function createBooking({
 		// 2. Create booking
 		const booking = await Booking.create({
 			eventId,
-			slug,
 			email
 		});
 
 		return {
 			success: true,
-			bookingId: booking._id
+			bookingId: booking._id.toString()
 		};
 	} catch (err) {
 		console.error(err, "Create booking failed");

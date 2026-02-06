@@ -26,7 +26,9 @@ export async function POST(req: NextRequest) {
 		const arrayBuffer = await file.arrayBuffer();
 		const buffer = Buffer.from(arrayBuffer);
 
-		const uploadResult = await new Promise<any>((resolve, reject) => {
+		type CloudinaryUploadResult = { secure_url: string };
+		const uploadResult = await new Promise<CloudinaryUploadResult>(
+			(resolve, reject) => {
 			cloudinary.uploader
 				.upload_stream(
 					{
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
 						if (error) return reject(error);
 						if (!result?.secure_url)
 							return reject(new Error("Cloudinary upload failed"));
-						resolve(result);
+						resolve({ secure_url: result.secure_url });
 					}
 				)
 				.end(buffer);

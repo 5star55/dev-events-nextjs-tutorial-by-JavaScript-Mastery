@@ -2,6 +2,7 @@
 
 import Event from "@/database/event.model";
 import connectDB from "@/lib/mongodb";
+import { isValidObjectId } from "mongoose";
 
 export const getSimilarEventsBySlug = async (
 	slug: string
@@ -10,7 +11,10 @@ export const getSimilarEventsBySlug = async (
 		await connectDB();
 
 		// Find base event
-		const event = await Event.findOne({ slug }).lean();
+		let event = await Event.findOne({ slug }).lean();
+		if (!event && isValidObjectId(slug)) {
+			event = await Event.findById(slug).lean();
+		}
 
 		if (!event) {
 			return [];
@@ -18,10 +22,10 @@ export const getSimilarEventsBySlug = async (
 
 		// Find similar events by tags (exclude current event)
 		const similarEvents = await Event.find({
-			slug: { $ne: slug },
+			_id: { $ne: event._id },
 			tags: { $in: event.tags || [] }
 		})
-			.select("title slug image tags date mode")
+			.select("title slug image tags date mode location time")
 			.lean<LeanEvent[]>();
 
 		return similarEvents;

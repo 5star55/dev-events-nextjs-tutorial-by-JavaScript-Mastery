@@ -22,7 +22,7 @@ export async function GET(
 		// Connect to database
 		await connectDB();
 
-		// Await and extract slug from params
+		// Extract slug from params
 		const {slug} = await params;
 
 		// Validate slug parameter
