@@ -5,7 +5,7 @@ import EventCard from '@/components/EventCard'
 import type {Event} from '../lib/constants'
 import { cacheLife } from 'next/cache'
 
-export default async function Home() {}
+export default async function Home() {
   'use cache'
   cacheLife('hours')
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
