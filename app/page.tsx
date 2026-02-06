@@ -9,7 +9,11 @@ async function EventsList() {
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
-  const response = await fetch(`${baseUrl}/api/events`, {next:{revalidate:60}})
+  const response = await fetch(`${baseUrl}/api/events`, { cache: "no-store" })
+  if (!response.ok) {
+    const text = await response.text()
+    throw new Error(`Events API failed: ${response.status} ${text}`)
+  }
   const {events}= await response.json()
 
   return (
