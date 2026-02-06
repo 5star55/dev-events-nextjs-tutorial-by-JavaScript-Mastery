@@ -3,11 +3,9 @@ import React, { Suspense } from 'react'
 import EventCard from '@/components/EventCard'
 // import {events} from '../lib/constants'
 import type {Event} from '../lib/constants'
-import { cacheLife } from 'next/cache'
 
 async function EventsList() {
   'use cache'
-  cacheLife('hours')
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ??
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:3000")
