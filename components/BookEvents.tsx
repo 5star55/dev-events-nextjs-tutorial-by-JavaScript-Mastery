@@ -2,7 +2,7 @@
 import {createBooking} from '@/lib/actions/booking.actions';
 import posthog from 'posthog-js';
 import {useState, type FormEvent} from 'react';
-import sendEmail from '@/lib/actions/booking.action'
+import sendEmail from '@/lib/actions/booking.actions'
 
 type BookEventsProps = {
 	eventId: string;
