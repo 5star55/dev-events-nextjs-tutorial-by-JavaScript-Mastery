@@ -15,9 +15,43 @@ const martianMono = Martian_Mono({
 	subsets: ['latin'],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+const siteTitle = 'DevEvent';
+const siteDescription = "The Hub for every Dev Event you Mustn't Miss";
+
 export const metadata: Metadata = {
-	title: 'DevEvent',
-	description: "The Hub for every Dev Event you Mustn't Miss",
+	metadataBase: new URL(siteUrl),
+	title: {
+		default: siteTitle,
+		template: `%s | ${siteTitle}`,
+	},
+	description: siteDescription,
+	alternates: {
+		canonical: '/',
+	},
+	openGraph: {
+		type: 'website',
+		url: '/',
+		title: siteTitle,
+		description: siteDescription,
+		siteName: siteTitle,
+		images: [
+			{
+				url: '/icons/logo.png',
+				alt: siteTitle,
+			},
+		],
+	},
+	twitter: {
+		card: 'summary_large_image',
+		title: siteTitle,
+		description: siteDescription,
+		images: ['/icons/logo.png'],
+	},
+	robots: {
+		index: true,
+		follow: true,
+	},
 };
 
 export default function RootLayout({
