@@ -2,7 +2,6 @@
 import {createBooking} from '@/lib/actions/booking.actions';
 import posthog from 'posthog-js';
 import {useState, type FormEvent} from 'react';
-import sendEmail from '@/lib/actions/booking.action'
 
 type BookEventsProps = {
 	eventId: string;
@@ -96,7 +95,7 @@ const handleBlur = () => {
 						disabled={loading}>
 						{loading ? 'BOOKING...' :'BOOK EVENT'}
 					</button>
-					{error && <p className='text-sm text-red-600'>{error}</p>}
+					{error && <p className='text-sm text-red-700'>{error}</p>}
 					{warning && <p className='text-sm text-amber-700'>{warning}</p>}
 					{emailError && <p>{emailError}</p>}
 				</form>
